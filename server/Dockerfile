@@ -1,47 +1,14 @@
-## Use a base JDK image
-#FROM eclipse-temurin:17-jdk-alpine
-#
-## Set working directory
-#WORKDIR /app
-#
-## Copy Maven wrapper and pom.xml first to leverage Docker cache
-#COPY .mvn/ .mvn
-#COPY mvnw pom.xml ./
-#
-## Download dependencies
-#RUN ./mvnw dependency:go-offline
-#
-## Copy all source files
-#COPY . .
-#
-## Build the application
-#RUN ./mvnw clean package -DskipTests
-#
-## Run the jar file
-#CMD ["java", "-jar", "target/*.jar"]
+# Use a base image with Java 17
+FROM openjdk:17-jdk-alpine
 
-
-# Use a base image with JDK 17
-FROM eclipse-temurin:17-jdk-alpine
-
-# Set working directory
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy Maven wrapper files first to leverage Docker cache
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
+# Copy the JAR file into the image
+COPY target/server-0.0.1-SNAPSHOT.jar /app/server.jar
 
-# 🛠️ Give executable permission to mvnw
-RUN chmod +x mvnw
+# Expose the port that Spring Boot runs on
+EXPOSE 8080
 
-# Download dependencies
-RUN ./mvnw dependency:go-offline
-
-# Copy all source files
-COPY . .
-
-# Build the application
-RUN ./mvnw clean package -DskipTests
-
-# Run the jar file (replace with your actual JAR name)
-CMD ["java", "-jar", "target/property-server-0.0.1-SNAPSHOT.jar"]
+# Run the app
+ENTRYPOINT ["java", "-jar", "server.jar"]

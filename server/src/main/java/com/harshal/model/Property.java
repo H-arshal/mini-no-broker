@@ -3,6 +3,8 @@ package com.harshal.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document(collection = "properties")
 public class Property {
 
@@ -17,17 +19,26 @@ public class Property {
 
     private String ownerEmail; // Extracted from token
 
+    private List<String> imageUrls; // ✅ Add this field
+
     // Constructors
     public Property() {}
 
-    public Property(String title, String city, int rent, String type, String description, String ownerEmail) {
+
+
+    // Constructor
+
+
+    public Property(String title, String city, int rent, String type, String description, List<String> imageUrls, String ownerEmail) {
         this.title = title;
         this.city = city;
         this.rent = rent;
         this.type = type;
         this.description = description;
+        this.imageUrls = imageUrls;
         this.ownerEmail = ownerEmail;
     }
+
 
     // Getters & Setters
 
@@ -37,6 +48,14 @@ public class Property {
 
     public String getTitle() {
         return title;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
     public void setTitle(String title) {

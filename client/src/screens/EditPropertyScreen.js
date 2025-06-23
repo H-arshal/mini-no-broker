@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import config from '../config';
 
 const EditPropertyScreen = ({ route, navigation }) => {
   const { property } = route.params;
@@ -31,7 +32,7 @@ const handleUpdateProperty = async () => {
     setIsSubmitting(true);
 
     await axios.put(
-      `http://10.0.2.2:8080/api/properties/${property.id}`,
+      `${config.BASE_URL}/api/properties/${property.id}`,
       {
         title: formData.title,
         city: formData.city,

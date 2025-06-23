@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, FlatList, StyleSheet, ActivityIndicator,
+  View, Text, FlatList, StyleSheet, ActivityIndicator,Image,
   TouchableOpacity, RefreshControl, TextInput, ScrollView, Alert
 } from 'react-native';
 import axios from 'axios';
+import config from '../config';
 
 const ViewPropertiesScreen = ({ navigation }) => {
   const [properties, setProperties] = useState([]);
@@ -24,7 +25,7 @@ const ViewPropertiesScreen = ({ navigation }) => {
       if (maxRent) query.push(`maxRent=${maxRent}`);
 
       const queryString = query.length ? `?${query.join('&')}` : '';
-      const response = await axios.get(`http://10.0.2.2:8080/api/properties${queryString}`);
+      const response = await axios.get(`${config.BASE_URL}/api/properties${queryString}`);
       setProperties(response.data);
     } catch (error) {
       console.error('Error fetching properties:', error);
@@ -44,24 +45,50 @@ const ViewPropertiesScreen = ({ navigation }) => {
     fetchProperties();
   };
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => navigation.navigate('PropertyDetails', { propertyId: item._id })}
-    >
-      <View style={styles.cardContent}>
-        <Text style={styles.title}>{item.title}</Text>
-        <View style={styles.detailsRow}>
-          <Text style={styles.detail}><Text style={styles.detailLabel}>City: </Text>{item.city}</Text>
-          <Text style={styles.detail}><Text style={styles.detailLabel}>Rent: </Text>₹{item.rent.toLocaleString()}</Text>
-        </View>
-        <View style={styles.detailsRow}>
-          <Text style={styles.detail}><Text style={styles.detailLabel}>Type: </Text>{item.type}</Text>
-        </View>
-        <Text style={styles.desc} numberOfLines={2}>{item.description}</Text>
+
+
+const renderItem = ({ item }) => (
+  <TouchableOpacity style={styles.card}>
+    {/* Image Section */}
+    {item.imageUrls && item.imageUrls.length > 0 && (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.imageScrollContainer}
+      >
+        {item.imageUrls.map((url, idx) => (
+          <Image
+            key={idx}
+            source={{ uri: url }}
+            style={styles.propertyImage}
+            resizeMode="cover"
+          />
+        ))}
+      </ScrollView>
+    )}
+
+    {/* Textual Details */}
+    <View style={styles.cardContent}>
+      <Text style={styles.title}>{item.title}</Text>
+      <View style={styles.detailsRow}>
+        <Text style={styles.detail}>
+          <Text style={styles.detailLabel}>City: </Text>{item.city}
+        </Text>
+        <Text style={styles.detail}>
+          <Text style={styles.detailLabel}>Rent: </Text>₹{item.rent.toLocaleString()}
+        </Text>
       </View>
-    </TouchableOpacity>
-  );
+      <View style={styles.detailsRow}>
+        <Text style={styles.detail}>
+          <Text style={styles.detailLabel}>Type: </Text>{item.type}
+        </Text>
+      </View>
+      <Text style={styles.desc} numberOfLines={3}>
+        {item.description}
+      </Text>
+    </View>
+  </TouchableOpacity>
+);
 
   return (
     <ScrollView style={styles.container}>
@@ -187,6 +214,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#2c3e50',
     marginBottom: 16,
+  },
+  imageScrollContainer: {
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    overflow: 'hidden',
+  },
+
+  propertyImage: {
+    width: 200,
+    height: 140,
+    marginRight: 10,
+    borderRadius: 8,
   },
   inputGroup: {
     marginBottom: 16,

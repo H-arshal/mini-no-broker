@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, FlatList, TouchableOpacity, StyleSheet,
+  View, Text, FlatList, TouchableOpacity, StyleSheet,Image,ScrollView,
   ActivityIndicator, Alert, RefreshControl
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import config from '../config';
 
 
 
@@ -25,7 +26,7 @@ const MyPropertiesScreen = ({ navigation }) => {
         return;
       }
 
-      const response = await axios.get('http://10.0.2.2:8080/api/properties/my', {
+      const response = await axios.get(`${config.BASE_URL}/api/properties/my`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -56,7 +57,7 @@ const MyPropertiesScreen = ({ navigation }) => {
             text: 'Delete',
             style: 'destructive',
             onPress: async () => {
-              await axios.delete(`http://10.0.2.2:8080/api/properties/${propertyId}`, {
+              await axios.delete(`${config.BASE_URL}/api/properties/${propertyId}`, {
               });
               fetchMyProperties();
             }
@@ -78,48 +79,68 @@ const MyPropertiesScreen = ({ navigation }) => {
     fetchMyProperties();
   }, []);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <Text style={styles.title}>{item.title}</Text>
+const renderItem = ({ item }) => (
+  <View style={styles.card}>
+    {/* Image Section */}
+    {item.imageUrls && item.imageUrls.length > 0 && (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.imageScrollContainer}
+      >
+        {item.imageUrls.map((url, idx) => (
+          <Image
+            key={idx}
+            source={{ uri: url }}
+            style={styles.propertyImage}
+            resizeMode="cover"
+          />
+        ))}
+      </ScrollView>
+    )}
 
-      <View style={styles.detailsContainer}>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>City:</Text>
-          <Text style={styles.detailValue}>{item.city}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Rent:</Text>
-          <Text style={styles.detailValue}>₹{item.rent.toLocaleString()}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Type:</Text>
-          <Text style={styles.detailValue}>{item.type}</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Description:</Text>
-          <Text style={[styles.detailValue, styles.description]} numberOfLines={2}>
-            {item.description}
-          </Text>
-        </View>
+    {/* Details Section */}
+    <Text style={styles.title}>{item.title}</Text>
+
+    <View style={styles.detailsContainer}>
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>City:</Text>
+        <Text style={styles.detailValue}>{item.city}</Text>
       </View>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.button, styles.editButton]}
-          onPress={() => navigation.navigate('EditProperty', { property: item })}
-        >
-          <Text style={styles.buttonText}>Edit</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.button, styles.deleteButton]}
-          onPress={() => handleDelete(item.id)}
-        >
-          <Text style={styles.buttonText}>Delete</Text>
-        </TouchableOpacity>
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>Rent:</Text>
+        <Text style={styles.detailValue}>₹{item.rent.toLocaleString()}</Text>
+      </View>
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>Type:</Text>
+        <Text style={styles.detailValue}>{item.type}</Text>
+      </View>
+      <View style={styles.detailRow}>
+        <Text style={styles.detailLabel}>Description:</Text>
+        <Text style={[styles.detailValue, styles.description]} numberOfLines={2}>
+          {item.description}
+        </Text>
       </View>
     </View>
-  );
+
+    {/* Buttons */}
+    <View style={styles.buttonContainer}>
+      <TouchableOpacity
+        style={[styles.button, styles.editButton]}
+        onPress={() => navigation.navigate('EditProperty', { property: item })}
+      >
+        <Text style={styles.buttonText}>Edit</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.button, styles.deleteButton]}
+        onPress={() => handleDelete(item.id)}
+      >
+        <Text style={styles.buttonText}>Delete</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+);
 
   if (loading && !refreshing) {
     return (
@@ -284,6 +305,20 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
+  imageScrollContainer: {
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
+
+  propertyImage: {
+    width: 200,
+    height: 140,
+    marginRight: 10,
+    borderRadius: 8,
+  },
+
 });
 
 export default MyPropertiesScreen;

@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 public class JwtUtil {
 
     private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-
-    // Token validity: 10 hours
     private final long expirationTime = 1000 * 60 * 60 * 10;
 
     public String generateToken(String email) {

@@ -24,9 +24,10 @@ public class PropertyService {
                 request.getRent(),
                 request.getType(),
                 request.getDescription(),
+                request.getImageUrls(),
                 ownerEmail
         );
-
+//        property.setImageUrls(request.getImageUrls());
         return propertyRepository.save(property);
     }
 

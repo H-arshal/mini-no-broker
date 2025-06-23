@@ -1,115 +1,10 @@
-//import React, { useState } from 'react';
-//import {
-//  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert
-//} from 'react-native';
-//import axios from 'axios';
-//import AsyncStorage from '@react-native-async-storage/async-storage';
-//
-//const LoginScreen = ({ navigation }) => {
-//  const [email, setEmail] = useState('');
-//  const [password, setPassword] = useState('');
-//
-//  const handleLogin = async () => {
-//    if (!email || !password) {
-//      Alert.alert('Validation Error', 'Please enter both email and password');
-//      return;
-//    }
-//
-//    try {
-//      const response = await axios.post(
-//        'http://10.0.2.2:8080/api/auth/login',
-//        { email, password },
-//        {
-//          headers: {
-//            'Content-Type': 'application/json'
-//          }
-//        }
-//      );
-//
-//      console.log("Login response:", response.data);
-//
-//      const token = response.data.token;
-//      if (token) {
-//        await AsyncStorage.setItem('token', token);
-//        Alert.alert('Login Successful', 'You are now logged in.');
-//         navigation.navigate('Home'); // Enable this after creating Home screen
-//      } else {
-//        console.warn('Token missing from response');
-//        Alert.alert('Login Failed', 'Token not received from server.');
-//      }
-//
-//    } catch (error) {
-//      console.error("Login error:", error.response?.data || error.message);
-//      const errorMessage = error.response?.data?.message || 'Something went wrong. Please try again.';
-//      Alert.alert('Login Error', errorMessage);
-//    }
-//  };
-//  return (
-//    <View style={styles.container}>
-//      <Text style={styles.title}>Mini NoBroker - Login</Text>
-//
-//      <TextInput
-//        style={styles.input}
-//        placeholder="Email"
-//        placeholderTextColor="#666"
-//        value={email}
-//        onChangeText={setEmail}
-//        autoCapitalize="none"
-//        keyboardType="email-address"
-//      />
-//
-//      <TextInput
-//        style={styles.input}
-//        placeholder="Password"
-//        placeholderTextColor="#666"
-//        value={password}
-//        onChangeText={setPassword}
-//        secureTextEntry
-//      />
-//
-//      <TouchableOpacity onPress={handleLogin} style={styles.button}>
-//        <Text style={styles.buttonText}>Login</Text>
-//      </TouchableOpacity>
-//
-//      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-//        <Text style={styles.link}>Don't have an account? Register</Text>
-//      </TouchableOpacity>
-//    </View>
-//  );
-//};
-//
-//export default LoginScreen;
-//
-//const styles = StyleSheet.create({
-//  container: {
-//    flex: 1, padding: 20, justifyContent: 'center', backgroundColor: '#f9f9f9'
-//  },
-//  title: {
-//    fontSize: 26, fontWeight: 'bold', marginBottom: 30, textAlign: 'center'
-//  },
-//  input: {
-//    height: 50, borderColor: '#ccc', borderWidth: 1, borderRadius: 8,
-//    paddingHorizontal: 15, marginBottom: 15, backgroundColor: '#fff'
-//  },
-//  button: {
-//    backgroundColor: '#007bff', padding: 15, borderRadius: 8, alignItems: 'center'
-//  },
-//  buttonText: {
-//    color: '#fff', fontSize: 16, fontWeight: '600'
-//  },
-//  link: {
-//    marginTop: 15, textAlign: 'center', color: '#007bff'
-//  }
-//});
-
-
-
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import config from '../config';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -123,10 +18,11 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
 
+
     setIsLoading(true);
     try {
       const response = await axios.post(
-        'http://10.0.2.2:8080/api/auth/login',
+          `${config.BASE_URL}/api/auth/login`,
         { email, password },
         {
           headers: {

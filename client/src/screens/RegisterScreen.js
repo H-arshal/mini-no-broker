@@ -22,7 +22,7 @@ const RegisterScreen = ({ navigation }) => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        'http://10.0.2.2:8080/api/auth/register',
+        `${config.BASE_URL}/api/auth/register`,
         { name, email, password },
         {
           headers: { 'Content-Type': 'application/json' }
